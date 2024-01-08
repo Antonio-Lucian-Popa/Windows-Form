@@ -1,0 +1,95 @@
+
+Aici putem vedea cum sa deschidem o conexiune la un server si a arata elementele dintrun tabel intrun list view
+
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace TEST_DATA_READER_SQL
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            this.button1.Text = "Data Reader";
+        }
+       
+        
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            SqlConnection sqlConnection1 = new SqlConnection(@"Data Source=DESKTOP-GUP3K7T\SQLEXPRESS;Initial Catalog=STUDENTI_INFO;Integrated Security=True");
+            SqlCommand sqlCommand1 = new SqlCommand("select * from PROFESOR", sqlConnection1);
+            try
+            {
+                sqlConnection1.Open();
+                MessageBox.Show("Conexiune deschisa!");
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+            using (SqlDataReader reader = sqlCommand1.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    for (int contor = 0; contor < reader.FieldCount - 1; contor++)
+                    {
+                        textBox1.Text += reader[contor].ToString();
+                    }
+                    textBox1.Text += Environment.NewLine;
+                }
+            }
+            textBox1.Text += "Date citite!";
+            sqlConnection1.Close();
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            this.textBox1.Text = String.Empty;
+            SqlConnection sqlConnection1 = new SqlConnection(@"Data Source=DESKTOP-GUP3K7T\SQLEXPRESS;Initial Catalog=STUDENTI_INFO;Integrated Security=True");
+            SqlCommand sqlCommand1 = new SqlCommand();
+            sqlCommand1.Connection = sqlConnection1;
+
+            sqlCommand1.CommandType = CommandType.Text; // Changed to CommandType.Text
+            sqlCommand1.CommandText = "SELECT * FROM Table_STUDENT"; // Direct SQL query
+
+            try
+            {
+                sqlConnection1.Open();
+                using (SqlDataReader reader = sqlCommand1.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        for (int contor = 0; contor < reader.FieldCount; contor++)
+                        {
+                            textBox1.Text += reader[contor].ToString() + " ";
+                        }
+                        textBox1.Text += Environment.NewLine;
+                    }
+                }
+                textBox1.Text += "Date citite!";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+                sqlConnection1.Close();
+            }
+        }
+
+    }
+
+}
